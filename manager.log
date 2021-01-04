@@ -1,0 +1,10 @@
+2020-12-31 11:42:19 [main] INFO  ru.alwertus.alwserv.AlwservApplication - Starting AlwservApplication using Java 15.0.1 on wowegpc with PID 7482 (/home/alwertus/Projects/java/alwserv/target/classes started by alwertus in /home/alwertus/Projects/java/alwserv)
+2020-12-31 11:42:19 [main] INFO  ru.alwertus.alwserv.AlwservApplication - No active profile set, falling back to default profiles: default
+2020-12-31 11:42:20 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 6000 (https)
+2020-12-31 11:42:20 [main] INFO  org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 508 ms
+2020-12-31 11:42:20 [main] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+2020-12-31 11:42:20 [main] INFO  org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping - Adding welcome page: ServletContext resource [/index.html]
+2020-12-31 11:42:20 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 6000 (https) with context path ''
+2020-12-31 11:42:20 [main] INFO  ru.alwertus.alwserv.AlwservApplication - Started AlwservApplication in 1.482 seconds (JVM running for 2.341)
+2020-12-31 11:42:20 [main] INFO  ru.alwertus.alwserv.AlwservApplication - Server started up !!!
+2020-12-31 11:42:32 [SpringContextShutdownHook] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
