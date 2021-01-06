@@ -38,6 +38,23 @@ public class TempRest {
         JSONObject rq = new JSONObject(body);
         log.info(rq.toString());
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        log.info(currentPrincipalName);
+
+
+        JSONObject rs = new JSONObject();
+        rs.put("METHOD", "loginauth");
+        rs.put("RESULT", authentication.getName());
+        rs.put("AUTHORITIES", authentication.getAuthorities());
+        return rs.toString();
+    }
+
+    @PostMapping("/loginauthadmin")
+    public String tryloginAuthAdmin(@RequestBody String body) {
+        JSONObject rq = new JSONObject(body);
+        log.info(rq.toString());
+
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();

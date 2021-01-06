@@ -19,7 +19,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("FIND USER " + email);
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("User doesn't exists"));
         return ru.alwertus.alwserv.auth.SecurityUser.fromUser(user);

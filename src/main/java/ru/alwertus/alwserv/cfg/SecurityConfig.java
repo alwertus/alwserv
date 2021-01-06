@@ -19,6 +19,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ru.alwertus.alwserv.auth.Permission;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +48,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/*").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/v1/test/login").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/v1/test/loginauth").authenticated()
+                    .antMatchers(HttpMethod.POST, "/api/v1/test/loginauthadmin").hasAuthority(Permission.ADMIN_FLAG.getPermission())
                     .antMatchers(HttpMethod.POST, "/api/v1/test/login/**").authenticated()
+
+
+                    .antMatchers(HttpMethod.POST, "/api/v1/user/current").authenticated()
+                    .antMatchers(HttpMethod.POST, "/api/v1/user/create").hasAuthority(Permission.ADMIN_FLAG.getPermission())
+
 //                    .antMatchers(HttpMethod.POST, "/api/**").authenticated()
                     .anyRequest().authenticated()
  /*               .and()
@@ -77,7 +84,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     protected PasswordEncoder passwordEncoder() {
-        System.out.println("PASSWORD");
         return new BCryptPasswordEncoder(); // set strength
     }
 
