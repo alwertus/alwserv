@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 //@Log4j2
 //@Configuration
 //@EnableWebMvc
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebMvcConfig/* implements WebMvcConfigurer*/ {
 
 /**
      * HttpStatus.NOT_FOUND = 404 page

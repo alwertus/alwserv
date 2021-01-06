@@ -11,16 +11,19 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.alwertus.alwserv.auth.Permission;
+import ru.alwertus.alwserv.jwt.JwtConfig;
+import ru.alwertus.alwserv.jwt.JwtTokenVerifier;
+import ru.alwertus.alwserv.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 
+import javax.crypto.SecretKey;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -30,20 +33,31 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final SecretKey secretKey;
+    private final JwtConfig jwtConfig;
 
     @Autowired
-    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
+                          SecretKey secretKey,
+                          JwtConfig jwtConfig) {
         this.userDetailsService = userDetailsService;
+        this.secretKey = secretKey;
+        this.jwtConfig = jwtConfig;
     }
 
+    //                .httpBasic()
+//                .and()
+    //                .cors()
+//                .and()
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .httpBasic()
-                .and()
                 .csrf().disable()
-                .cors()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                    .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
+                    .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                     .antMatchers("/*").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/v1/test/login").permitAll()
@@ -55,7 +69,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST, "/api/v1/user/current").authenticated()
                     .antMatchers(HttpMethod.POST, "/api/v1/user/create").hasAuthority(Permission.ADMIN_FLAG.getPermission())
 
-//                    .antMatchers(HttpMethod.POST, "/api/**").authenticated()
                     .anyRequest().authenticated()
  /*               .and()
                     .formLogin()    // аутентификация - форма логина
