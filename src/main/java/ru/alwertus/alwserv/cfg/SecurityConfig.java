@@ -15,7 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -50,42 +49,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.userRepository = userRepository;
     }
 
-    //                .httpBasic()
-//                .and()
-    //                .cors()
-//                .and()
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().and()
                 .csrf().disable()
-//                .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy","default-src 'self'"))
-//                .headers()
-                .headers()
-                    .xssProtection().disable().and()
-//                    .frameOptions().sameOrigin()
-//                    .httpStrictTransportSecurity().disable()
-//                .and()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-                .and()
-                    .headers()
-                        .addHeaderWriter(new StaticHeadersWriter("X-XSS-Protection","0"))
-                        .addHeaderWriter(new StaticHeadersWriter("Access-Control-Allow-Headers","Authorization"))
 
                 .and()
                     .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey, userRepository))
                     .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                     .antMatchers("/*").permitAll()
-                    .antMatchers(HttpMethod.POST, "/api/v1/test/login").permitAll()
-                    .antMatchers(HttpMethod.POST, "/api/v1/test/loginauth").authenticated()
-                    .antMatchers(HttpMethod.POST, "/api/v1/test/loginauthadmin").hasAuthority(Permission.ADMIN_FLAG.getPermission())
-                    .antMatchers(HttpMethod.POST, "/api/v1/test/login/**").authenticated()
+                    .antMatchers(HttpMethod.POST, "/api/v1/applications/status").authenticated()
 
-                    .antMatchers(HttpMethod.POST, "/api/v1/user/current").authenticated()
-                    .antMatchers(HttpMethod.POST, "/api/v1/user/create").hasAuthority(Permission.ADMIN_FLAG.getPermission())
+                    .antMatchers(HttpMethod.POST,
+                            "/api/v1/applications/config/reload",
+                            "/api/v1/user/create",
+                            "/api/v1/applications/start/*",
+                            "/api/v1/applications/stop/*").hasAuthority(Permission.ADMIN_FLAG.getPermission())
 
                     .anyRequest().authenticated()
         ;
@@ -126,16 +109,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         return source;
     }
-/*    @Bean
-    public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedMethod("*");
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-        return new CorsFilter(urlBasedCorsConfigurationSource);
-        https://stackoverflow.com/questions/35913099/spring-security-oauth2-cors-issue-for-authorization-header
-    }*/
 }
