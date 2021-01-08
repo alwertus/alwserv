@@ -30,22 +30,6 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/current")
-    public String getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        User user = userRepository
-                .findByEmail(authentication.getName())
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("Email " + authentication.getName() + " not found"));
-
-        JSONObject rs = new JSONObject();
-        rs.put("FIRSTNAME", user.getFirstName());
-        rs.put("LASTNAME", user.getLastName());
-        rs.put("AUTHORITIES", authentication.getAuthorities());
-        return rs.toString();
-    }
-
     @PostMapping("/create")
     public String createNewUser(@RequestBody String body) {
         JSONObject rq = new JSONObject(body);

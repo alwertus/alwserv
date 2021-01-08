@@ -15,10 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.alwertus.alwserv.auth.Permission;
+import ru.alwertus.alwserv.auth.UserRepository;
 import ru.alwertus.alwserv.jwt.JwtConfig;
 import ru.alwertus.alwserv.jwt.JwtTokenVerifier;
 import ru.alwertus.alwserv.jwt.JwtUsernameAndPasswordAuthenticationFilter;
@@ -35,14 +37,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
+    private final UserRepository userRepository;
 
     @Autowired
     public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
                           SecretKey secretKey,
-                          JwtConfig jwtConfig) {
+                          JwtConfig jwtConfig,
+                          UserRepository userRepository) {
         this.userDetailsService = userDetailsService;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
+        this.userRepository = userRepository;
     }
 
     //                .httpBasic()
@@ -52,11 +57,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors().and()
                 .csrf().disable()
+//                .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy","default-src 'self'"))
+//                .headers()
+                .headers()
+                    .xssProtection().disable().and()
+//                    .frameOptions().sameOrigin()
+//                    .httpStrictTransportSecurity().disable()
+//                .and()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
                 .and()
-                    .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
+                    .headers()
+                        .addHeaderWriter(new StaticHeadersWriter("X-XSS-Protection","0"))
+                        .addHeaderWriter(new StaticHeadersWriter("Access-Control-Allow-Headers","Authorization"))
+
+                .and()
+                    .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey, userRepository))
                     .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                     .antMatchers("/*").permitAll()
@@ -65,28 +84,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST, "/api/v1/test/loginauthadmin").hasAuthority(Permission.ADMIN_FLAG.getPermission())
                     .antMatchers(HttpMethod.POST, "/api/v1/test/login/**").authenticated()
 
-
                     .antMatchers(HttpMethod.POST, "/api/v1/user/current").authenticated()
                     .antMatchers(HttpMethod.POST, "/api/v1/user/create").hasAuthority(Permission.ADMIN_FLAG.getPermission())
 
                     .anyRequest().authenticated()
- /*               .and()
-                    .formLogin()    // аутентификация - форма логина
-                        .loginPage("/auth/login").permitAll()   // определяем кастомную страницу логина, и разрешаем её всем
-                        .defaultSuccessUrl("/auth/success")     // если логин прошёл удачно - перенаправляем
-                .and()
-                    .logout()//.permitAll()
-                        .logoutRequestMatcher(                  // настраиваем логаут
-                                new AntPathRequestMatcher(      // requestMatcher должен быть обработан AntPathRequestMatcher
-                                        "/auth/logout", // по указаной ссылке
-                                        "POST"       // с указанным методом
-                                )
-                        )
-                        .invalidateHttpSession(true)            // инвалидируем сессию
-                        .clearAuthentication(true)              // очищаем аутентификацию
-                        .deleteCookies("JSESSIONID")            // чистим куки
-                        .logoutSuccessUrl("/auth/login")        // перенаправляем в случае удачного логаута
-        */
         ;
     }
 
@@ -111,14 +112,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Cache-Control",
+                "Content-Type"
+        ));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
+/*    @Bean
+    public CorsFilter corsFilter() {
+        final UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsFilter(urlBasedCorsConfigurationSource);
+        https://stackoverflow.com/questions/35913099/spring-security-oauth2-cors-issue-for-authorization-header
+    }*/
 }

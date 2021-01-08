@@ -2,12 +2,15 @@ package ru.alwertus.alwserv.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import org.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ru.alwertus.alwserv.auth.User;
+import ru.alwertus.alwserv.auth.UserRepository;
 
 import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
@@ -23,13 +26,16 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     private final AuthenticationManager authenticationManager;
     private final JwtConfig jwtConfig;
     private final SecretKey secretKey;
+    private final UserRepository userRepository;
 
     public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager,
                                                       JwtConfig jwtConfig,
-                                                      SecretKey secretKey) {
+                                                      SecretKey secretKey,
+                                                      UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtConfig = jwtConfig;
         this.secretKey = secretKey;
+        this.userRepository = userRepository;
     }
 
     /* STEP 1
@@ -38,7 +44,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        System.out.println("STEP 1");
         try {
             UsernameAndPasswordAuthenticationRequest authenticationRequest = new ObjectMapper()
                     .readValue(request.getInputStream(), UsernameAndPasswordAuthenticationRequest.class);
@@ -66,7 +71,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        System.out.println("STEP 2");
 
         String token = Jwts.builder()
                 .setSubject(authResult.getName())
@@ -77,5 +81,21 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .compact();
 
         response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
+
+        // Kludge below
+        User user = userRepository
+                .findByEmail(authResult.getName())
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Email " + authResult.getName() + " not found"));
+
+        JSONObject rsJson = new JSONObject();
+        rsJson.put(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
+        rsJson.put("Firstname", user.getFirstName());
+        rsJson.put("Lastname", user.getLastName());
+        rsJson.put("Authorities", authResult.getAuthorities());
+
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(rsJson.toString());
+
     }
 }

@@ -1,6 +1,5 @@
 package ru.alwertus.alwserv.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
