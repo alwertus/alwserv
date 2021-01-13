@@ -26,7 +26,6 @@ import ru.alwertus.alwserv.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 
 import javax.crypto.SecretKey;
 import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -62,7 +61,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                     .antMatchers("/*").permitAll()
-                    .antMatchers(HttpMethod.POST, "/api/v1/applications/status").authenticated()
+
+                    .antMatchers(HttpMethod.POST,
+                            "/api/v1/applications/status",
+                            "/api/v1/infolist").authenticated()
 
                     .antMatchers(HttpMethod.POST,
                             "/api/v1/applications/config/reload",
@@ -96,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://192.168.1.10:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization",
