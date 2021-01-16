@@ -7,8 +7,7 @@ programsCfg="$targetDir"/programs.cfg
 properties="$targetDir"/application.properties
 
 function create_package {
-#  mvn clean package
-echo "mvn clean package"
+ mvn clean package
 }
 
 function copy_files {
@@ -31,6 +30,10 @@ spring.datasource.password=<CHANGE_ME>
 application.jwt.secretKey=<CHANGE_ME_LOOOOOOOOOOOOONG>
 application.jwt.tokenPrefix=Bearer
 application.jwt.tokenExpirationAfterDays=14
+
+application.allowed.origins=<CHANGE_ME>
+application.allowed.methods=GET,POST
+application.allowed.headers=Authorization,Cache-Control,Content-Type
 EOT
 
 cat <<EOT >> "$programsCfg"
