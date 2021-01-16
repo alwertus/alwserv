@@ -1,5 +1,6 @@
 package ru.alwertus.alwserv.cfg;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ import ru.alwertus.alwserv.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import javax.crypto.SecretKey;
 import java.util.Arrays;
 
+@Log4j2
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)  // Ability to give access with annotation @PreAuthorize
@@ -36,16 +38,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
     private final UserRepository userRepository;
+    private final CorsConfig corsConfig;
 
     @Autowired
     public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
                           SecretKey secretKey,
                           JwtConfig jwtConfig,
-                          UserRepository userRepository) {
+                          UserRepository userRepository, CorsConfig corsConfig) {
         this.userDetailsService = userDetailsService;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
         this.userRepository = userRepository;
+        this.corsConfig = corsConfig;
     }
 
     @Override
@@ -97,15 +101,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        if (corsConfig.getOrigins().isEmpty())
+            log.error("Parameter 'application.allowed.origins' is EMPTY");
+
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://192.168.1.10:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Authorization",
-                "Cache-Control",
-                "Content-Type"
-        ));
+        configuration.setAllowedOrigins(Arrays.asList(corsConfig.getOrigins().split(",")));
+        configuration.setAllowedMethods(Arrays.asList(corsConfig.getMethods().split(",")));
+        configuration.setAllowedHeaders(Arrays.asList(corsConfig.getHeaders().split(",")));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
