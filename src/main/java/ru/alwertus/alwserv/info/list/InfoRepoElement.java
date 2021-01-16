@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table (name="infostruct")
+@Table (name="info_struct")
 public class InfoRepoElement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
