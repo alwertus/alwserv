@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.alwertus.alwserv.auth.CurrentUser;
+import ru.alwertus.alwserv.auth.User;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -24,16 +25,23 @@ public class FinOperationCrudService {
         this.currentUser = currentUser;
     }
 
-    public List<FinOperationRs> getOperationsPerMonth(Date d1) {
-        Calendar cc = new GregorianCalendar();
-        cc.setTimeInMillis(d1.getTime());
-        cc.set(Calendar.MONTH, cc.get(Calendar.MONTH) + 1);
-        Date d2 = cc.getTime();
+    public List<FinOperationRs> getOperationsPerMonth(Calendar d) {
+        Calendar c1 = new GregorianCalendar(d.get(Calendar.YEAR), d.get(Calendar.MONTH), 1);
+        Calendar c2 = new GregorianCalendar(d.get(Calendar.YEAR), d.get(Calendar.MONTH), 1);
+        c2.add(Calendar.MONTH, 1);
 
-        log.info("get all records (" + d1.toString() + ", " + d2.toString() + ") user=" + currentUser.getCurrentUser().getId());
-//        log.info(c.getTime().toString());
-        return repo
-                .findAll(currentUser.getCurrentUser(), d1, d2)
+        User user = currentUser.getCurrentUser();
+
+        List<FinOperation> queryList = repo.findAllBetweenDates(user, c1, c2);
+
+        log.info(String.format("Get All. USER=%s, SIZE=%s, START='%s', END='%s'",
+                user.getId(),
+                queryList.size(),
+                c1.get(Calendar.YEAR)+"-"+c1.get(Calendar.MONTH)+"-"+c1.get(Calendar.DAY_OF_MONTH),
+                c2.get(Calendar.YEAR)+"-"+c2.get(Calendar.MONTH)+"-"+c1.get(Calendar.DAY_OF_MONTH)
+        ));
+
+        return queryList
                 .stream()
                 .map(FinOperationRs::new)
                 .collect(Collectors.toList());
@@ -49,7 +57,7 @@ public class FinOperationCrudService {
             Long sheet_id,
             String description,
             String name,
-            Date plannedDate,
+            Calendar plannedDate,
             Integer planned,
             String sign
             ) {
@@ -87,10 +95,10 @@ public class FinOperationCrudService {
         repo.save(op);
         return op;
     }
-    public Date remove(Long id) throws Exception {
+    public Calendar remove(Long id) throws Exception {
         log.info("Remove record [id] = " + id);
         FinOperation op = findRecord(id);
-        Date date = op.getPlannedDate();
+        Calendar date = op.getPlannedDate();
         repo.delete(op);
         return date;
     }

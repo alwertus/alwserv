@@ -13,7 +13,7 @@ public class FinOperationRs {
     public Long getSheet() {return repo.getSheet();}
     public String getName() {return repo.getName();}
     public String getDescription() {return repo.getDescription();}
-    public Long getPlannedDate() {return repo.getPlannedDate().getTime();}
+    public Long getPlannedDate() {return repo.getPlannedDate().getTimeInMillis();}
     public int getPlanned() {return repo.getPlanned();}
     public Long getActualDate() {return repo.getActualDate().getTime();}
     public int getActual() {return repo.getActual();}

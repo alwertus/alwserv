@@ -4,6 +4,7 @@ import lombok.Data;
 import ru.alwertus.alwserv.auth.User;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Date;
 
 @Data
@@ -31,7 +32,7 @@ public class FinOperation {
     private String description;
 
     @Column(name = "planned_date")
-    private Date plannedDate;
+    private Calendar plannedDate;
 
     @Column(name = "planned")
     private int planned;

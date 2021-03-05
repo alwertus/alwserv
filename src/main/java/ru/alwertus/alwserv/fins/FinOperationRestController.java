@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.alwertus.alwserv.common.JSONObjectExtended;
 
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 @Log4j2
 @RestController
@@ -33,12 +34,13 @@ public class FinOperationRestController {
         try {
             switch (operation) {
                 case "GetMonthOperations" -> {
-                    Date d = new Date(rq.getLong("Date", 0L));
+                    Calendar d = new GregorianCalendar();
+                    d.setTimeInMillis(rq.getLong("Date", 0L));
                     rs.put("List", service.getOperationsPerMonth(d));
                 }
                 case "Create" -> {
-                    Date plannedDate = new Date(rq.getLong("PlannedDate", 0L));
-//                    plannedDate.setTimeInMillis();
+                    Calendar plannedDate = new GregorianCalendar();
+                    plannedDate.setTimeInMillis(rq.getLong("PlannedDate", 0L));
                     service.create(
                             rq.getLong("SheetId", -1L),
                             rq.getString("Description", ""),
@@ -51,7 +53,7 @@ public class FinOperationRestController {
                 }
                 case "Update" -> {
                     String field = rq.getString("Field","");
-                    Date c = service.change(
+                    Calendar c = service.change(
                             rq.getLong("Id"),
                             field,
                             rq.get("newValue"))
