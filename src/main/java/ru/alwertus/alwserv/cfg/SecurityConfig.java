@@ -69,7 +69,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST,
                             "/api/v1/applications/status",
                             "/api/v1/infolist",
-                            "/api/v1/info").authenticated()
+                            "/api/v1/info",
+                            "/api/v1/cash").authenticated()
 
                     .antMatchers(HttpMethod.POST,
                             "/api/v1/applications/config/reload",

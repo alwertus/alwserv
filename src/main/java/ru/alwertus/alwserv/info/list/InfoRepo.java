@@ -20,4 +20,5 @@ public interface InfoRepo extends CrudRepository<InfoRepoElement, Long> {
 
     @Query("select t from InfoRepoElement t where t.access='PUBLIC'")
     List<InfoRepoElement> findAllPublic();
+
 }

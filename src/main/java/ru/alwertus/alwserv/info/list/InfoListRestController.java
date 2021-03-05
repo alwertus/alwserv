@@ -35,30 +35,18 @@ public class InfoListRestController {
         JSONObject rs = new JSONObject();
         try {
             JSONObject rq = new JSONObject(body);
-
             String operation = rq.getString("Operation");
+            Long id;
+
             switch (operation) {
+                case "Delete":
+                    id = getLongFromJson(rq, "Id", -1L);
+
+                    break;
                 case "Upsert":
-                    Long id;
-                    try {
-                        id = rq.getLong("Id");
-                    } catch (JSONException e) {
-                        id = -1L;
-                    }
-
-                    Long newParent;
-                    try {
-                        newParent = rq.getLong("Parent");
-                    } catch(JSONException e) {
-                        newParent = null;
-                    }
-
-                    String newTitle;
-                    try {
-                        newTitle = rq.getString("Title");
-                    } catch(JSONException e) {
-                        newTitle = null;
-                    }
+                    id = getLongFromJson(rq, "Id", -1L);
+                    Long newParent = getLongFromJson(rq, "Parent", null);
+                    String newTitle = getStringFromJson(rq, "Title", null);
 
                     if (id <= 0)
                         id = infoCurdService.create(
@@ -80,7 +68,7 @@ public class InfoListRestController {
                     rs.put("PUBLIC", infoCurdService.getAll(InfoAccess.PUBLIC));
                     break;
                 default:
-                    throw new RuntimeException("Unknow operation");
+                    throw new RuntimeException("Unknown operation");
             }
 
             rs.put("Result", "OK");
@@ -90,5 +78,20 @@ public class InfoListRestController {
             rs.put("Error", e.getMessage());
         }
         return rs.toString();
+    }
+
+    private Long getLongFromJson(JSONObject json, String key, Long defaultResult) {
+        try {
+            return json.getLong(key);
+        } catch(JSONException e) {
+            return defaultResult;
+        }
+    }
+    private String getStringFromJson(JSONObject json, String key, String defaultResult) {
+        try {
+            return json.getString(key);
+        } catch(JSONException e) {
+            return defaultResult;
+        }
     }
 }
