@@ -5,18 +5,35 @@ import ru.alwertus.alwserv.auth.User;
 
 import javax.persistence.*;
 import java.util.Calendar;
-import java.util.Date;
 
 @Data
 @Entity
 @Table(name = "fin_operations")
 public class FinOperation {
+
+    public static FinOperation copyFinOperation(FinOperation orig) {
+        FinOperation fo = new FinOperation();
+        fo.setCreated(orig.getCreated());
+        fo.setCreator(orig.getCreator());
+        fo.setSheet(orig.getSheet());
+        fo.setName(orig.getName());
+        fo.setDescription(orig.getDescription());
+        fo.setPlannedDate(orig.getPlannedDate());
+        fo.setPlanned(orig.getPlanned());
+        fo.setActualDate(orig.getActualDate());
+        fo.setActual(orig.getActual());
+        fo.setSign(orig.getSign());
+        fo.setIsGroup(orig.getIsGroup());
+        fo.setParent(orig.getParent());
+        return fo;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="created")
-    private Date created;
+    private Calendar created;
 
     @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "creator", referencedColumnName = "id")
@@ -38,11 +55,18 @@ public class FinOperation {
     private int planned;
 
     @Column(name = "actual_date")
-    private Date actualDate;
+    private Calendar actualDate;
 
     @Column(name = "actual")
     private int actual;
 
     @Column(name = "sign")
     private char sign;
+
+    @Column(name = "is_group")
+    private char isGroup;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private FinOperation parent;
 }

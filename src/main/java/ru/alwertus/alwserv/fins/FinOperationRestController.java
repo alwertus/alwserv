@@ -32,42 +32,49 @@ public class FinOperationRestController {
 
         String operation = rq.getString("Operation", "");
         try {
+            Calendar date = new GregorianCalendar();
             switch (operation) {
                 case "GetMonthOperations" -> {
-                    Calendar d = new GregorianCalendar();
-                    d.setTimeInMillis(rq.getLong("Date", 0L));
-                    rs.put("List", service.getOperationsPerMonth(d));
+                    date.setTimeInMillis(rq.getLong("Date", 0L));
                 }
                 case "Create" -> {
-                    Calendar plannedDate = new GregorianCalendar();
-                    plannedDate.setTimeInMillis(rq.getLong("PlannedDate", 0L));
+                    date.setTimeInMillis(rq.getLong("PlannedDate", 0L));
                     service.create(
-                            rq.getLong("SheetId", -1L),
                             rq.getString("Description", ""),
                             rq.getString("Name", ""),
-                            plannedDate,
+                            date,
                             rq.getInt("Planned", 0),
-                            rq.getString("Sign", "-")
+                            rq.getString("Sign", "-"),
+                            rq.getString("Group", "N")
                     );
-                    rs.put("List", service.getOperationsPerMonth(plannedDate));
+                }
+                case "CreateChild" -> {
+                    date = service.createChild(
+                            rq.getLong("ParentId"),
+                            rq.getString("Description", ""),
+                            rq.getString("Name", "")
+                    );
                 }
                 case "Update" -> {
                     String field = rq.getString("Field","");
-                    Calendar c = service.change(
+                    date = service.change(
                             rq.getLong("Id"),
                             field,
                             rq.get("newValue"))
                             .getPlannedDate();
-                    rs.put("List", service.getOperationsPerMonth(c));
+                }
+                case "FillFromTemplate" -> {
+                    date.setTimeInMillis(rq.getLong("PlannedDate"));
+                    service.fillDateFromTemplate(date);
                 }
                 case "Remove" -> {
-                    rs.put("List", service.getOperationsPerMonth(
-                            service.remove(
-                                    rq.getLong("Id")
-                            )));
+                    date = service.remove(
+                            rq.getLong("Id")
+                    );
                 }
                 default -> throw new Exception("Unknown Operation '" + operation + "'");
             }
+            rs.put("List", service.getOperationsPerMonthRs(date));
             rs.put("Result", "Ok");
 
         } catch(Exception e) {

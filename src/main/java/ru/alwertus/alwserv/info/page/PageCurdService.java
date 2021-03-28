@@ -2,7 +2,7 @@ package ru.alwertus.alwserv.info.page;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.alwertus.alwserv.auth.CurrentUser;
+import ru.alwertus.alwserv.auth.UserService;
 import ru.alwertus.alwserv.info.list.InfoAccess;
 import ru.alwertus.alwserv.info.list.InfoRepo;
 import ru.alwertus.alwserv.info.list.InfoRepoElement;
@@ -14,13 +14,13 @@ public class PageCurdService {
 
 
     private final InfoRepo infoRepo;
-    private final CurrentUser currentUser;
+    private final UserService userService;
     private final PageRepo pageRepo;
 
     @Autowired
-    public PageCurdService(InfoRepo infoRepo, CurrentUser currentUser, PageRepo pageRepo) {
+    public PageCurdService(InfoRepo infoRepo, UserService userService, PageRepo pageRepo) {
         this.infoRepo = infoRepo;
-        this.currentUser = currentUser;
+        this.userService = userService;
         this.pageRepo = pageRepo;
     }
 
@@ -28,7 +28,7 @@ public class PageCurdService {
         InfoRepoElement menuItem = infoRepo.findById(id)
                 .orElseThrow(()->new NoSuchElementException(String.format("Record id=%d not found", id)));
 
-        if (currentUser.getCurrentUser() != menuItem.getCreator() && menuItem.getAccess() != InfoAccess.PUBLIC)
+        if (userService.getCurrentUser() != menuItem.getCreator() && menuItem.getAccess() != InfoAccess.PUBLIC)
             throw new RuntimeException("Forbidden. You have not access to record id=" + id);
 
         return menuItem;

@@ -3,7 +3,7 @@ package ru.alwertus.alwserv.info.list;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.alwertus.alwserv.auth.CurrentUser;
+import ru.alwertus.alwserv.auth.UserService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 public class InfoCurdService {
 
     private final InfoRepo infoRepo;
-    private final CurrentUser currentUser;
+    private final UserService userService;
 
     @Autowired
-    public InfoCurdService(InfoRepo infoRepo, CurrentUser currentUser) {
+    public InfoCurdService(InfoRepo infoRepo, UserService userService) {
         this.infoRepo = infoRepo;
-        this.currentUser = currentUser;
+        this.userService = userService;
     }
 
     public void update(Long id, Long newParentId, String newTitle) {
@@ -28,7 +28,7 @@ public class InfoCurdService {
         InfoRepoElement updatedRecord = infoRepo.findById(id)
                 .orElseThrow(()->new NoSuchElementException(String.format("Record id=%d not found", id)));
 
-        if (currentUser.getCurrentUser() != updatedRecord.getCreator())
+        if (userService.getCurrentUser() != updatedRecord.getCreator())
             throw new RuntimeException("Forbidden. You have not access to record id=" + id);
 
         if (newParentId != null) {
@@ -53,7 +53,7 @@ public class InfoCurdService {
         log.info("Create new record InfoList");
         InfoRepoElement newRecord = new InfoRepoElement();
         newRecord.setTitle(newTitle);
-        newRecord.setCreator(currentUser.getCurrentUser());
+        newRecord.setCreator(userService.getCurrentUser());
         if (newParentId != null && newParentId > 1) {
             InfoRepoElement parent = infoRepo.findById(newParentId)
                     .orElseThrow(() -> new NoSuchElementException(String.format("Parent id=%d not found", newParentId)));
@@ -69,7 +69,7 @@ public class InfoCurdService {
         log.trace("Get All " + infoAccess + " Records");
         List<InfoRepoElement> dbResult = infoAccess.equals(InfoAccess.PUBLIC)
                 ? infoRepo.findAllPublic()
-                : infoRepo.findAllPrivate(currentUser.getCurrentUser());
+                : infoRepo.findAllPrivate(userService.getCurrentUser());
         return dbResult.stream()
                 .map(repo -> new InfoTreeNode(
                         repo.getId(),

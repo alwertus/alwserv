@@ -70,7 +70,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/api/v1/applications/status",
                             "/api/v1/infolist",
                             "/api/v1/info",
-                            "/api/v1/cash").authenticated()
+                            "/api/v1/cash",
+                            "/api/v1/cash_options"
+                            ).authenticated()
 
                     .antMatchers(HttpMethod.POST,
                             "/api/v1/applications/config/reload",

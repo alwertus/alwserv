@@ -31,4 +31,7 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    @Column(name = "fin_sheet_id")
+    private Long finSheetId;
 }
