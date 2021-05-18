@@ -14,7 +14,7 @@ import java.util.GregorianCalendar;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/v1/cash")
+@RequestMapping("/api/v1/cash1")
 public class FinOperationRestController {
 
     private final FinOperationCrudService service;
@@ -45,7 +45,8 @@ public class FinOperationRestController {
                             date,
                             rq.getInt("Planned", 0),
                             rq.getString("Sign", "-"),
-                            rq.getString("Group", "N")
+                            rq.getString("Group", "N"),
+                            rq.getInt("PartNumber", 0)
                     );
                 }
                 case "CreateChild" -> {

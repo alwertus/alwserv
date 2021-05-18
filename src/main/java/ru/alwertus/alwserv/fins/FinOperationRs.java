@@ -1,23 +1,27 @@
 package ru.alwertus.alwserv.fins;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public class FinOperationRs {
-    private final FinOperation repo;
+    private final FinOperation repoObj;
 
     public FinOperationRs(FinOperation op) {
-        repo = op;
+        repoObj = op;
     }
 
-    public Long getId() {return repo.getId();}
-    public Long getCreated() {return repo.getCreated().getTimeInMillis();}
-    public Long getCreator() {return repo.getCreator().getId(); }
-    public Long getSheet() {return repo.getSheet();}
-    public String getName() {return repo.getName();}
-    public String getDescription() {return repo.getDescription();}
-    public Long getPlannedDate() {return repo.getPlannedDate().getTimeInMillis();}
-    public int getPlanned() {return repo.getPlanned();}
-    public Long getActualDate() {return repo.getActualDate().getTimeInMillis();}
-    public int getActual() {return repo.getActual();}
-    public char getSign() {return repo.getSign();}
-    public char getIsGroupFlag() {return repo.getIsGroup();}
-    public Long getParentId() {return repo.getParent().getId();}
+    public Long getId() {return repoObj.getId();}
+    public Long getCreated() {return repoObj.getCreated().getTimeInMillis();}
+    public Long getCreator() {return repoObj.getCreator().getId(); }
+    public Long getSheet() {return repoObj.getSheet();}
+    public String getName() {return repoObj.getName();}
+    public String getDescription() {return repoObj.getDescription();}
+    public Long getPlannedDate() {return repoObj.getPlannedDate().getTimeInMillis();}
+    public int getPlanned() {return repoObj.getPlanned();}
+    public Long getActualDate() {return repoObj.getActualDate().getTimeInMillis();}
+    public int getActual() {return repoObj.getActual();}
+    public char getSign() {return repoObj.getSign();}
+    public char getIsGroupFlag() {return repoObj.getIsGroup();}
+    public Long getParentId() {return repoObj.getParent().getId();}
+    public int getPartNumber() {return repoObj.getPartNumber();}
 }

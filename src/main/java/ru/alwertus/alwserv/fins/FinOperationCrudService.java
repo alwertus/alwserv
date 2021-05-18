@@ -65,7 +65,8 @@ public class FinOperationCrudService {
             Calendar plannedDate,
             Integer planned,
             String sign,
-            String group
+            String group,
+            Integer partNum
             ) {
         FinOperation op = new FinOperation();
         op.setCreator(userService.getCurrentUser());
@@ -77,6 +78,7 @@ public class FinOperationCrudService {
         op.setSign(sign.charAt(0));
         op.setSheet(userService.getCurrentUser().getFinSheetId());
         op.setIsGroup(group.charAt(0));
+        op.setPartNumber(partNum);
         repo.save(op);
         log.info("Save operation -> OK. ID=" + op.getId());
         return op.getId();

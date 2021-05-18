@@ -25,6 +25,7 @@ public class FinOperation {
         fo.setSign(orig.getSign());
         fo.setIsGroup(orig.getIsGroup());
         fo.setParent(orig.getParent());
+        fo.setPartNumber(orig.getPartNumber());
         return fo;
     }
 
@@ -65,6 +66,9 @@ public class FinOperation {
 
     @Column(name = "is_group")
     private char isGroup;
+
+    @Column(name = "part_num")
+    private int partNumber;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")

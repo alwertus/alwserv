@@ -71,7 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/api/v1/infolist",
                             "/api/v1/info",
                             "/api/v1/cash",
-                            "/api/v1/cash_options"
+                            "/api/v1/cash_options",
+                            "/api/v1/test"
                             ).authenticated()
 
                     .antMatchers(HttpMethod.POST,
