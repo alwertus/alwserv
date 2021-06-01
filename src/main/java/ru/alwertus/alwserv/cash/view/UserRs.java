@@ -1,6 +1,7 @@
-package ru.alwertus.alwserv.cash;
+package ru.alwertus.alwserv.cash.view;
 
 import ru.alwertus.alwserv.auth.User;
+import ru.alwertus.alwserv.cash.model.SheetAccessType;
 
 public class UserRs {
     private final User user;

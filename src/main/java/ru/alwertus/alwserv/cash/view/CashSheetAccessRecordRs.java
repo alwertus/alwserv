@@ -1,4 +1,6 @@
-package ru.alwertus.alwserv.cash;
+package ru.alwertus.alwserv.cash.view;
+
+import ru.alwertus.alwserv.cash.model.CashSheetAccessRecord;
 
 public class CashSheetAccessRecordRs {
     private final CashSheetAccessRecord accessRecord;

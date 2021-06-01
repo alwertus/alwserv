@@ -1,10 +1,16 @@
-package ru.alwertus.alwserv.cash;
+package ru.alwertus.alwserv.cash.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.alwertus.alwserv.auth.User;
 import ru.alwertus.alwserv.auth.UserService;
+import ru.alwertus.alwserv.cash.model.CashSheetAccessRecord;
+import ru.alwertus.alwserv.cash.model.CashSheetAccessRepo;
+import ru.alwertus.alwserv.cash.model.CashSheetRecord;
+import ru.alwertus.alwserv.cash.model.SheetAccessType;
+import ru.alwertus.alwserv.cash.view.CashSheetAccessRecordRs;
+import ru.alwertus.alwserv.cash.view.UserRs;
 
 import java.util.List;
 import java.util.stream.Collectors;

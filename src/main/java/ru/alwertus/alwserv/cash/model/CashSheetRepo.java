@@ -1,4 +1,4 @@
-package ru.alwertus.alwserv.cash;
+package ru.alwertus.alwserv.cash.model;
 
 import org.springframework.data.repository.CrudRepository;
 

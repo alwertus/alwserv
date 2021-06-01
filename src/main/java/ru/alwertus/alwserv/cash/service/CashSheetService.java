@@ -1,20 +1,23 @@
-package ru.alwertus.alwserv.cash;
+package ru.alwertus.alwserv.cash.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.alwertus.alwserv.auth.UserService;
+import ru.alwertus.alwserv.cash.model.CashSheetRecord;
+import ru.alwertus.alwserv.cash.model.CashSheetRepo;
+import ru.alwertus.alwserv.cash.model.SheetAccessType;
 
 @Log4j2
 @Service
-public class CashService {
+public class CashSheetService {
 
     private final CashSheetRepo sheetRepo;
     private final CashSheetAccessService accessService;
     private final UserService userService;
 
     @Autowired
-    public CashService(CashSheetRepo sheetRepo, CashSheetAccessService accessService, UserService userService) {
+    public CashSheetService(CashSheetRepo sheetRepo, CashSheetAccessService accessService, UserService userService) {
         this.sheetRepo = sheetRepo;
         this.accessService = accessService;
         this.userService = userService;

@@ -1,4 +1,4 @@
-package ru.alwertus.alwserv.cash;
+package ru.alwertus.alwserv.cash.model;
 
 import lombok.Data;
 import ru.alwertus.alwserv.auth.User;
@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "cash_sheet_access")
 public class CashSheetAccessRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,4 +25,5 @@ public class CashSheetAccessRecord {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "access")
     private SheetAccessType access;
+
 }
