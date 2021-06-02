@@ -1,14 +1,27 @@
 package ru.alwertus.alwserv.cash.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Calendar;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "cash_line")
 public class CashLineRecord {
+
+    public CashLineRecord(CashLineRecord orig) {
+        setName(orig.getName());
+        setSumPlan(orig.getSumPlan());
+        setSumActual(orig.getSumActual());
+        setCompleted(orig.getCompleted());
+        setComment(orig.getComment());
+        setSequence(orig.getSequence());
+        setGroup(orig.getGroup());
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -24,5 +24,5 @@ public class CashGroupRecordRs {
                 .stream()
                 .map(CashLineRecordRs::new)
                 .collect(Collectors.toList());}
-    //    private CashColumnRecord column;
+    public char getCopySign() {return record.getCopySign();}
 }

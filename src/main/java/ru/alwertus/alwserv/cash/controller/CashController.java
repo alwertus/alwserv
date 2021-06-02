@@ -132,6 +132,10 @@ public class CashController {
                         rq.get("NewValue")
                 );
                 case "DeleteLine" -> lineService.delete(rq.getLong("Id"));
+                case "AutoFill" -> cashService.autoFill(
+                        rq.getInt("Year"),
+                        rq.getInt("Month"),
+                        rq.getInt("Column"));
 
                 default -> throw new Exception("Unknown operation");
             }

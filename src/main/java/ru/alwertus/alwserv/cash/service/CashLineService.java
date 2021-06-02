@@ -29,6 +29,7 @@ public class CashLineService {
         line.setSumActual(actual);
         lineRepo.save(line);
     }
+
     public void delete(Long id) {
         CashLineRecord line = lineRepo
                 .findById(id)
