@@ -34,4 +34,5 @@ public class User {
 
     @Column(name = "fin_sheet_id")
     private Long finSheetId;
+
 }

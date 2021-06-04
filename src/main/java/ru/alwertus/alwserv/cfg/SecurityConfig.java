@@ -72,7 +72,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/api/v1/info",
                             "/api/v1/cash",
                             "/api/v1/cash_options",
-                            "/api/v1/test"
+                            "/api/v1/test",
+                            "/api/v1/todo"
                             ).authenticated()
 
                     .antMatchers(HttpMethod.POST,
@@ -86,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(daoAuthenticationProvider());
     }
 
